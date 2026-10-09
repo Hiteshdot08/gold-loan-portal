@@ -1,4 +1,5 @@
 import express, { type NextFunction, type Request, type Response } from "express";
+import { leadRouter } from "./leadRoutes";
 import { prisma } from "./db";
 import { AppError, fromZod, toErrorBody } from "./errors";
 import { quoteRequestSchema } from "./schemas";
@@ -7,6 +8,7 @@ import { calculateQuote } from "./quote";
 export function createApp() {
   const app = express();
   app.use(express.json());
+  app.use("/api/v1/leads", leadRouter);
 
   app.get("/api/v1/loan-schemes", async (_req, res, next) => {
     try {
