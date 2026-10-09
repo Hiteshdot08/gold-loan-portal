@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum LeadStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+}
+
+model LoanScheme {
+  id                 String   @id            // PLAN_EMI_01
+  name               String
+  annualInterestBps  Int                     // 1050 = 10.50%
+  maxLtvBps          Int                     // 7500 = 75%
+  tenureMonths       Int
+  repaymentType      String                  // BULLET | EMI
+  active             Boolean  @default(true)
+  leads              Lead[]
+}
+
+model Lead {
+  id              Int        @id @default(autoincrement())  // applicationId = GL-(1000+id)
+  name            String
+  mobileNumber    String
+  grossWeightMg   Int
+  netWeightMg     Int
+  karat           Int
+  planId          String
+  plan            LoanScheme @relation(fields: [planId], references: [id])
+  goldValuePaise  BigInt
+  eligibleLoan    Int                        // whole rupees
+  status          LeadStatus @default(SUBMITTED)
+  createdAt       DateTime   @default(now())
+
+  @@index([mobileNumber, createdAt])
+  @@index([createdAt])
+}
