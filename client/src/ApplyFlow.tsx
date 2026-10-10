@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import ConfirmStep from './ConfirmStep'
 import DetailsStep from './DetailsStep'
 import QuoteStep from './QuoteStep'
+import Stepper from './Stepper'
 import { validate, type FormValues } from './helpers'
 
 const EMPTY: FormValues = {
@@ -17,6 +18,8 @@ export default function ApplyFlow() {
   const [values, setValues] = useState<FormValues>(EMPTY)
   const [touched, setTouched] = useState<Partial<Record<keyof FormValues, boolean>>>({})
   const [planId, setPlanId] = useState('')
+  const [leaving, setLeaving] = useState(false)
+  const busy = useRef(false)
 
   const errors = validate(values)
 
@@ -32,42 +35,62 @@ export default function ApplyFlow() {
     setTouched((t) => ({ ...t, [key]: true }))
   }
 
-  function reset() {
-    setValues(EMPTY)
-    setTouched({})
-    setPlanId('')
-    setStep(1)
+  // Fade the current step out, swap it, then let the next one fade in.
+  function go(next: 1 | 2 | 3, beforeSwap?: () => void) {
+    if (busy.current) return
+    busy.current = true
+    setLeaving(true)
+    window.setTimeout(() => {
+      beforeSwap?.()
+      setStep(next)
+      setLeaving(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      busy.current = false
+    }, 300)
   }
 
+  function reset() {
+    go(1, () => {
+      setValues(EMPTY)
+      setTouched({})
+      setPlanId('')
+    })
+  }
+
+  let content
   if (step === 1) {
-    return (
+    content = (
       <DetailsStep
         values={values}
         errors={errors}
         touched={touched}
         onChange={onChange}
         onBlur={onBlur}
-        onNext={() => setStep(2)}
+        onNext={() => go(2)}
       />
     )
-  }
-  if (step === 2) {
-    return (
+  } else if (step === 2) {
+    content = (
       <QuoteStep
         values={values}
         selectedPlanId={planId}
         onSelect={setPlanId}
-        onBack={() => setStep(1)}
-        onNext={() => setStep(3)}
+        onBack={() => go(1)}
+        onNext={() => go(3)}
       />
     )
+  } else {
+    content = (
+      <ConfirmStep values={values} planId={planId} onBack={() => go(2)} onReset={reset} />
+    )
   }
+
   return (
-    <ConfirmStep
-      values={values}
-      planId={planId}
-      onBack={() => setStep(2)}
-      onReset={reset}
-    />
+    <>
+      <Stepper step={step} />
+      <div key={step} className={leaving ? 'step-view leaving' : 'step-view'}>
+        {content}
+      </div>
+    </>
   )
 }

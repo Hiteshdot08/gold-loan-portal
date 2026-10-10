@@ -36,7 +36,10 @@ export default function AdminTable() {
 
   return (
     <div className="card">
-      <h2>Leads</h2>
+      <h2>
+        Leads
+        {!loading && !error && <span className="count">{leads.length}</span>}
+      </h2>
       <div className="field">
         <label htmlFor="planFilter">Filter by plan</label>
         <select id="planFilter" value={planId} onChange={(e) => setPlanId(e.target.value)}>
@@ -55,7 +58,13 @@ export default function AdminTable() {
         </div>
       )}
       {loading && <p className="muted">Loading…</p>}
-      {!loading && !error && leads.length === 0 && <p className="muted">No leads yet.</p>}
+      {!loading && !error && leads.length === 0 && (
+        <div className="empty">
+          <div className="empty-icon" aria-hidden="true">{'\u2205'}</div>
+          <p>No applications yet.</p>
+          <span className="muted">Submitted leads will show up here, newest first.</span>
+        </div>
+      )}
 
       {!loading && leads.length > 0 && (
         <div className="table-wrap">

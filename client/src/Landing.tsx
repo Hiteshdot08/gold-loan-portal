@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import './landing.css'
 
 type Props = { onStart: () => void }
@@ -6,9 +7,38 @@ export default function Landing({ onStart }: Props) {
   const howItWorks = () =>
     document.getElementById('lp-how')?.scrollIntoView({ behavior: 'smooth' })
 
+  // Fade sections in as they scroll into view
+  useEffect(() => {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const els = document.querySelectorAll<HTMLElement>(
+      '.lp-stats-box, .lp-how > h2, .lp-how > p, .lp-step, .lp-faq h2, .lp-faq details, .lp-banner'
+    )
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (!e.isIntersecting) return
+          const el = e.target as HTMLElement
+          el.classList.add('in')
+          io.unobserve(el)
+          window.setTimeout(() => {
+            el.classList.remove('lp-reveal', 'in')
+            el.style.transitionDelay = ''
+          }, 1100)
+        })
+      },
+      { threshold: 0.12 }
+    )
+    els.forEach((el, i) => {
+      el.classList.add('lp-reveal')
+      el.style.transitionDelay = `${(i % 4) * 70}ms`
+      io.observe(el)
+    })
+    return () => io.disconnect()
+  }, [])
+
   return (
     <div className="lp">
-      <div className="lp-hero-wrap">
+      <div className="lp-topbar">
         <nav className="lp-nav">
           <div className="lp-logo">
             <svg viewBox="0 0 64 64" aria-hidden="true">
@@ -20,6 +50,10 @@ export default function Landing({ onStart }: Props) {
           </div>
           <button className="lp-link" onClick={onStart}>Open portal</button>
         </nav>
+      </div>
+
+      <div className="lp-hero-wrap">
+        
 
         <header className="lp-hero">
           <div>
@@ -52,6 +86,15 @@ export default function Landing({ onStart }: Props) {
         </header>
       </div>
 
+      <section className="lp-stats">
+        <div className="lp-stats-box">
+          <div className="lp-stat"><b>75%</b><span>Maximum loan-to-value</span></div>
+          <div className="lp-stat"><b>2</b><span>Repayment plans</span></div>
+          <div className="lp-stat"><b>18-24K</b><span>Karats supported</span></div>
+          <div className="lp-stat"><b>~1 min</b><span>To get an offer</span></div>
+        </div>
+      </section>
+
       <section className="lp-how" id="lp-how">
         <h2>Three steps, no sign-up</h2>
         <p>Nothing to register. Details are only saved when you submit an application.</p>
@@ -74,6 +117,26 @@ export default function Landing({ onStart }: Props) {
         </div>
       </section>
 
+      <section className="lp-faq">
+        <h2>Common questions</h2>
+        <details>
+          <summary>Do I need to sign up?</summary>
+          <p>No. There are no accounts. Your details are only saved when you submit an application.</p>
+        </details>
+        <details>
+          <summary>How is the loan amount worked out?</summary>
+          <p>Pure gold is your net weight times karat divided by 24. Its value uses the day's 24K rate, and the loan is that value times the plan's loan-to-value, capped at 75% and rounded down to whole rupees.</p>
+        </details>
+        <details>
+          <summary>Is the offer final?</summary>
+          <p>No. It is a preliminary estimate, not an approval.</p>
+        </details>
+        <details>
+          <summary>Can I apply twice?</summary>
+          <p>The same mobile number cannot apply again within 7 days. If you try, you will be shown your existing application ID.</p>
+        </details>
+      </section>
+
       <div className="lp-wrapper-pad">
         <section className="lp-banner">
           <div>
@@ -84,7 +147,11 @@ export default function Landing({ onStart }: Props) {
         </section>
       </div>
 
-      <p className="lp-foot">Offers are preliminary estimates and not a final approval.</p>
+      <footer className="lp-footer">
+        <b>Gold Loan</b>
+        Offers are preliminary estimates and not a final approval.
+        <div><button onClick={onStart}>Open portal</button></div>
+      </footer>
     </div>
   )
 }

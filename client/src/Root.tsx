@@ -20,7 +20,7 @@ export default function Root() {
   if (phase === 'app') {
     return (
       <div className="fade-in">
-        <App />
+        <App onHome={() => setPhase('landing')} />
       </div>
     )
   }

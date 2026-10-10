@@ -57,7 +57,12 @@ export default function QuoteStep({ values, selectedPlanId, onSelect, onBack, on
           {error}
         </div>
       )}
-      {loading && <p className="muted">Calculating your offers…</p>}
+      {loading && (
+        <div aria-busy="true" aria-label="Calculating your offers">
+          <div className="skeleton" />
+          <div className="skeleton" />
+        </div>
+      )}
 
       {!loading &&
         quotes.map((q) => {
@@ -71,11 +76,13 @@ export default function QuoteStep({ values, selectedPlanId, onSelect, onBack, on
             >
               <h3>{q.planName}</h3>
               {plan && (
-                <span className="muted">
-                  {plan.annualInterestRate}% p.a. · {plan.tenureMonths} months · up to{' '}
-                  {Math.round(plan.maxLtv * 100)}% LTV
-                </span>
+                <div className="badges">
+                  <span className="badge">{plan.annualInterestRate}% p.a.</span>
+                  <span className="badge">{plan.tenureMonths} months</span>
+                  <span className="badge">Up to {Math.round(plan.maxLtv * 100)}% LTV</span>
+                </div>
               )}
+              <div className="plan-caption">Eligible loan</div>
               <div className="plan-loan">{formatINR(q.eligibleLoan)}</div>
               <div className="plan-meta">
                 <span>Pure gold: {q.pureGoldGrams} g</span>

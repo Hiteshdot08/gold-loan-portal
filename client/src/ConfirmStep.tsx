@@ -8,6 +8,7 @@ import {
   type PlanQuote,
 } from './api'
 import { formatINR, type FormValues } from './helpers'
+import CopyButton from './CopyButton'
 
 interface Props {
   values: FormValues
@@ -61,10 +62,13 @@ export default function ConfirmStep({ values, planId, onBack, onReset }: Props) 
 
   if (result) {
     return (
-      <div className="card">
+      <div className="card success-card">
+        <div className="success-icon" aria-hidden="true">{'\u2713'}</div>
         <h2>Application submitted</h2>
-        <div className="banner info" role="status">
-          Your application ID is <strong>{result.applicationId}</strong>
+        <div className="success-id" role="status">
+          <span>Your application ID</span>
+          <strong>{result.applicationId}</strong>
+          <CopyButton text={result.applicationId} />
         </div>
         <p>
           Preliminary loan amount: <strong>{formatINR(result.eligibleLoan)}</strong>
@@ -94,7 +98,7 @@ export default function ConfirmStep({ values, planId, onBack, onReset }: Props) 
           )}
         </div>
       )}
-      <dl>
+      <dl className="summary">
         <dt className="muted">Name</dt>
         <dd>{values.name.trim()}</dd>
         <dt className="muted">Mobile</dt>

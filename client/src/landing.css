@@ -52,3 +52,53 @@
 @media (max-width: 800px) {
   .lp-hero { grid-template-columns: 1fr; padding-bottom: 56px; }
 }
+
+/* ---- Round 2 ---- */
+.lp-nav-sticky { position: sticky; top: 0; z-index: 10; background: rgba(13,59,44,.88); backdrop-filter: blur(8px); }
+.lp-hero-wrap { position: relative; overflow: hidden; }
+.lp-hero-wrap::before {
+  content: ''; position: absolute; width: 520px; height: 520px; right: -140px; top: -160px;
+  background: radial-gradient(circle, rgba(230,188,90,.28), transparent 65%); pointer-events: none;
+}
+.lp-hero, .lp-nav { position: relative; }
+.lp-quote { transition: transform .25s ease; }
+.lp-quote:hover { transform: translateY(-4px) rotate(-.4deg); }
+
+.lp-stats { max-width: 1080px; margin: -36px auto 0; padding: 0 24px; position: relative; z-index: 2; }
+.lp-stats-box {
+  background: #fff; border: 1px solid #ece7d6; border-radius: 18px; padding: 22px 12px;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); text-align: center;
+  box-shadow: 0 18px 40px rgba(20,38,31,.1);
+}
+.lp-stat { padding: 6px 10px; }
+.lp-stat b { display: block; font-size: 28px; font-weight: 800; color: #0d3b2c; }
+.lp-stat span { font-size: 13px; color: #5d6b64; }
+
+.lp-step { transition: transform .2s ease, box-shadow .2s ease; }
+.lp-step:hover { transform: translateY(-4px); box-shadow: 0 14px 28px rgba(20,38,31,.08); }
+
+.lp-faq { max-width: 760px; margin: 0 auto; padding: 64px 24px 8px; }
+.lp-faq h2 { font-size: clamp(24px, 4vw, 32px); font-weight: 800; text-align: center; margin-bottom: 24px; }
+.lp-faq details { background: #fff; border: 1px solid #ece7d6; border-radius: 14px; padding: 16px 20px; margin-bottom: 10px; }
+.lp-faq summary { cursor: pointer; font-weight: 700; list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+.lp-faq summary::-webkit-details-marker { display: none; }
+.lp-faq summary::after { content: '+'; color: #b8861a; font-size: 20px; line-height: 1; }
+.lp-faq details[open] summary::after { content: '\2212'; }
+.lp-faq details p { margin-top: 10px; color: #5d6b64; line-height: 1.65; font-size: 14px; }
+
+.lp-footer { background: #0d3b2c; color: #c9d4cb; margin-top: 56px; padding: 32px 24px; text-align: center; font-size: 13px; }
+.lp-footer b { color: #f6f1e3; font-size: 16px; display: block; margin-bottom: 6px; }
+.lp-footer button { background: none; border: 0; color: #e6bc5a; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 12px; }
+
+/* ---- Final polish ---- */
+.lp-topbar { position: sticky; top: 0; z-index: 30; background: #0d3b2c; box-shadow: 0 1px 0 rgba(255,255,255,.08); }
+.lp-topbar .lp-nav { padding: 14px 24px; }
+#lp-how { scroll-margin-top: 70px; }
+
+.lp-reveal { opacity: 0; transform: translateY(22px); transition: opacity .6s ease, transform .6s ease; }
+.lp-reveal.in { opacity: 1; transform: none; }
+
+.lp-btn:focus-visible, .lp-link:focus-visible, .lp-footer button:focus-visible, .lp-faq summary:focus-visible {
+  outline: 3px solid #e6bc5a; outline-offset: 3px; border-radius: 8px;
+}
+@media (prefers-reduced-motion: reduce) { .lp-reveal { opacity: 1; transform: none; transition: none; } }
