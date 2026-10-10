@@ -1,0 +1,15 @@
+.fade-in { animation: pageIn .5s ease backwards; }
+.fade-out { animation: pageOut .4s ease forwards; pointer-events: none; }
+
+@keyframes pageIn {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pageOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-14px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fade-in, .fade-out { animation: none; }
+}

@@ -1,0 +1,54 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+.lp { min-height: 100vh; background: #fbf9f3; color: #14261f; font-family: 'Manrope', system-ui, sans-serif; }
+.lp * { box-sizing: border-box; }
+.lp h1, .lp h2, .lp h3, .lp p { margin: 0; }
+
+.lp-hero-wrap { background: linear-gradient(135deg, #0d3b2c 0%, #14543f 100%); color: #f6f1e3; }
+.lp-nav { display: flex; justify-content: space-between; align-items: center; max-width: 1080px; margin: 0 auto; padding: 20px 24px; }
+.lp-logo { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 19px; letter-spacing: .2px; }
+.lp-logo svg { width: 30px; height: 30px; }
+.lp-link { background: none; border: 1px solid rgba(246,241,227,.45); color: #f6f1e3; padding: 8px 16px; border-radius: 999px; font-weight: 600; font-size: 13px; cursor: pointer; font-family: inherit; }
+.lp-link:hover { background: rgba(255,255,255,.1); }
+
+.lp-hero { display: grid; grid-template-columns: 1.1fr .9fr; gap: 40px; align-items: center; max-width: 1080px; margin: 0 auto; padding: 40px 24px 80px; }
+.lp-eyebrow { color: #e6bc5a; font-weight: 700; font-size: 13px; letter-spacing: 1.4px; text-transform: uppercase; margin-bottom: 16px; }
+.lp-hero h1 { font-size: clamp(34px, 5.5vw, 54px); line-height: 1.08; font-weight: 800; }
+.lp-hero h1 span { color: #e6bc5a; }
+.lp-lead { margin-top: 20px; font-size: 16px; line-height: 1.65; color: #d4dccf; max-width: 480px; }
+.lp-actions { display: flex; gap: 12px; margin-top: 30px; flex-wrap: wrap; }
+.lp-btn { border: 0; cursor: pointer; border-radius: 10px; padding: 14px 24px; font-size: 15px; font-weight: 700; font-family: inherit; }
+.lp-btn-gold { background: #e6bc5a; color: #1a2a12; }
+.lp-btn-gold:hover { background: #f0c969; }
+.lp-btn-ghost { background: transparent; color: #f6f1e3; border: 1px solid rgba(246,241,227,.5); }
+.lp-btn-ghost:hover { background: rgba(255,255,255,.08); }
+
+.lp-quote { background: #fff; color: #14261f; border-radius: 18px; padding: 24px; box-shadow: 0 24px 50px rgba(0,0,0,.28); }
+.lp-quote-tag { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: #7a8a82; }
+.lp-quote h3 { font-size: 18px; margin: 6px 0 16px; font-weight: 800; }
+.lp-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px dashed #e4e0d2; font-size: 14px; }
+.lp-row span:first-child { color: #5d6b64; }
+.lp-row b { font-weight: 700; }
+.lp-loan { margin-top: 16px; background: #eef6f0; border-radius: 12px; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+.lp-loan small { color: #4b6a5c; font-weight: 600; font-size: 12px; }
+.lp-loan strong { font-size: 24px; font-weight: 800; color: #0d3b2c; }
+.lp-quote-note { font-size: 11px; color: #8a958f; margin-top: 12px; }
+
+.lp-how { max-width: 1080px; margin: 0 auto; padding: 72px 24px 24px; }
+.lp-how h2 { font-size: clamp(26px, 4vw, 34px); font-weight: 800; }
+.lp-how > p { color: #5d6b64; margin-top: 10px; max-width: 520px; line-height: 1.6; }
+.lp-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 36px; }
+.lp-step { background: #fff; border: 1px solid #ece7d6; border-radius: 16px; padding: 26px; }
+.lp-num { font-size: 40px; font-weight: 800; color: #e6bc5a; line-height: 1; }
+.lp-step h3 { font-size: 18px; margin: 14px 0 8px; font-weight: 800; }
+.lp-step p { font-size: 14px; line-height: 1.6; color: #5d6b64; }
+
+.lp-banner { max-width: 1080px; margin: 56px auto 0; background: #0d3b2c; color: #f6f1e3; border-radius: 20px; padding: 40px 32px; display: flex; justify-content: space-between; align-items: center; gap: 24px; flex-wrap: wrap; }
+.lp-banner h2 { font-size: clamp(22px, 3.5vw, 30px); font-weight: 800; max-width: 520px; }
+.lp-banner p { color: #c9d4cb; margin-top: 8px; font-size: 14px; }
+.lp-wrapper-pad { padding: 0 24px; }
+.lp-foot { text-align: center; font-size: 12px; color: #7a857f; padding: 28px 20px 36px; }
+
+@media (max-width: 800px) {
+  .lp-hero { grid-template-columns: 1fr; padding-bottom: 56px; }
+}
