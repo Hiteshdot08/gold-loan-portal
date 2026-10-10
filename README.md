@@ -9,6 +9,8 @@ Stack: Node.js, Express, TypeScript, Zod, PostgreSQL (Prisma 6), React (Vite), G
 - App: https://gold-loan-portal-drab.vercel.app/
 - API: https://gold-loan-portal.onrender.com/api/v1/loan-schemes
 
+The app opens on a landing page. Click **Check my offer** (or **Open portal**) to reach the application form, Loan Assist and the admin table.
+
 The API runs on Render's free tier and the database on Neon's free tier, so the first request after a period of inactivity can take 30 to 60 seconds. If the page looks stuck on first load, wait a minute and refresh.
 
 ## Setup
