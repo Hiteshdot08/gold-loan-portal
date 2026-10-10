@@ -68,14 +68,18 @@ All errors use one shape: { error: { code, message, fields[] } }, including 404 
 - The server never trusts client numbers. Leads are recomputed from weight, karat and plan.
 - The form and the agent both call the same createLead service.
 - Agent: three tools (get_loan_schemes, calculate_quote, submit_application). The model never does arithmetic, tool arguments are validated with the same Zod schemas as the API, and submit_application only runs after the user clicks Confirm on a summary card in the UI. The system prompt keeps it on gold loans, with no investment advice and no promises of approval, callbacks or next steps.
-- LLM calls retry on 503/500 with backoff (src/llm.ts).
+- LLM calls retry on 503/500/429 (src/llm.ts). On a 429 it waits for the delay Gemini suggests, and gives up straight away if that delay is over 60 seconds (a daily quota), so a request never hangs for hours.
 
 ## Tests
 
 - Unit and API tests (npm test, 30 tests in 6 files): quote maths including the brief's cases 1 to 4, Zod schemas (cases 4 and 5), error contract, lead utilities, 404 and invalid JSON, and the leads endpoint (201 on success with server-side recomputation, 409 for a duplicate mobile).
 - Agent conversations (npm run eval in server): 5 scripted conversations: happy path, missing field, net above gross, duplicate within 7 days, off-topic.
 
-Eval status: the free Gemini tier allows 20 requests per day per model. Conversations 1 and 2 passed in an earlier run. Conversations 3 to 5 were blocked by the daily quota (HTTP 429) and have not been verified yet.
+Eval status (run on 10 Oct 2026, model gemini-3.7-flash, free tier):
+
+- Conversations 1 (happy path), 2 (missing field), 4 (duplicate within 7 days) and 5 (off-topic) PASS. Conversation 1 includes the check that the reply makes no promise of a callback or next step.
+- Conversation 3 (net weight above gross) is NOT verified yet. Its run was blocked by Gemini free-tier rate limits (HTTP 429) and never reached its checks. Run it alone with: npm run eval -- netAboveGross
+- Conversations are selected by function name, not number (happyPath, missingField, netAboveGross, duplicate, offTopic).
 
 ## Bonus
 
@@ -91,6 +95,6 @@ Not done: docker compose up and the demo video.
 ## With more time
 
 - Idempotency-Key on POST /leads and a database-level guard against simultaneous duplicate requests
-- Do not retry daily-quota 429s in the LLM wrapper, and stream agent replies
+- Stream agent replies, and pause between eval conversations to stay under the per-minute limit
 - More automated evals: prompt injection, Hinglish, the user changing their mind
 - Pagination for the leads list and Docker Compose
