@@ -59,7 +59,7 @@ All errors use one shape: { error: { code, message, fields[] } }, including 404 
 
 ## Tests
 
-- Unit and API tests (npm test): quote maths including the brief's cases 1 to 4, Zod schemas (cases 4 and 5), error contract, lead utilities, 404 and invalid JSON.
+- Unit and API tests (npm test, 30 tests in 6 files): quote maths including the brief's cases 1 to 4, Zod schemas (cases 4 and 5), error contract, lead utilities, 404 and invalid JSON, and the leads endpoint (201 on success with server-side recomputation, 409 for a duplicate mobile).
 - Agent conversations (npm run eval in server): 5 scripted conversations: happy path, missing field, net above gross, duplicate within 7 days, off-topic.
 
 Eval status: the free Gemini tier allows 20 requests per day per model. Conversations 1 and 2 passed in an earlier run. Conversations 3 to 5 were blocked by the daily quota (HTTP 429) and have not been verified yet.
