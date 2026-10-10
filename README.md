@@ -66,7 +66,13 @@ Eval status: the free Gemini tier allows 20 requests per day per model. Conversa
 
 ## Bonus
 
-None attempted.
+B4 (Ops Ready), partly done:
+
+- Rate limit on POST /leads: 10 per minute per IP, returns 429 in the standard error shape
+- GitHub Actions CI (.github/workflows/ci.yml): server type-check and tests against a Postgres service, plus the client build
+- ARCHITECTURE.md
+
+Not done: docker compose up and the demo video.
 
 ## With more time
 
