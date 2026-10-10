@@ -1,9 +1,8 @@
 import express, { type NextFunction, type Request, type Response } from "express";
 import { leadRouter } from "./leadRoutes";
-import { prisma } from "./db";
 import { AppError, fromZod, toErrorBody } from "./errors";
 import { quoteRequestSchema } from "./schemas";
-import { calculateQuote } from "./quote";
+import { getLoanSchemes, getQuotes } from "./planService";
 
 export function createApp() {
   const app = express();
@@ -12,20 +11,7 @@ export function createApp() {
 
   app.get("/api/v1/loan-schemes", async (_req, res, next) => {
     try {
-      const plans = await prisma.loanScheme.findMany({
-        where: { active: true },
-        orderBy: { id: "asc" },
-      });
-      res.json(
-        plans.map((p) => ({
-          id: p.id,
-          name: p.name,
-          annualInterestRate: p.annualInterestBps / 100,
-          tenureMonths: p.tenureMonths,
-          maxLtv: Math.min(p.maxLtvBps, 7500) / 10000,
-          repaymentType: p.repaymentType,
-        }))
-      );
+      res.json(await getLoanSchemes());
     } catch (e) {
       next(e);
     }
@@ -36,22 +22,7 @@ export function createApp() {
       const parsed = quoteRequestSchema.safeParse(req.body);
       if (!parsed.success) throw fromZod(parsed.error);
       const { netWeightGrams, karat } = parsed.data;
-
-      const plans = await prisma.loanScheme.findMany({
-        where: { active: true },
-        orderBy: { id: "asc" },
-      });
-
-      const quotes = plans.map((p) => {
-        const q = calculateQuote({
-          netWeightGrams,
-          karat,
-          plan: { maxLtv: p.maxLtvBps / 10000 },
-        });
-        return { planId: p.id, planName: p.name, ...q };
-      });
-
-      res.json({ netWeightGrams, karat, quotes });
+      res.json(await getQuotes({ netWeightGrams, karat }));
     } catch (e) {
       next(e);
     }
