@@ -75,11 +75,12 @@ All errors use one shape: { error: { code, message, fields[] } }, including 404 
 - Unit and API tests (npm test, 30 tests in 6 files): quote maths including the brief's cases 1 to 4, Zod schemas (cases 4 and 5), error contract, lead utilities, 404 and invalid JSON, and the leads endpoint (201 on success with server-side recomputation, 409 for a duplicate mobile).
 - Agent conversations (npm run eval in server): 5 scripted conversations: happy path, missing field, net above gross, duplicate within 7 days, off-topic.
 
-Eval status (run on 10 Oct 2026, model gemini-3.7-flash, free tier):
+Eval status (10 Oct 2026, Gemini free tier). All 5 conversations pass:
 
-- Conversations 1 (happy path), 2 (missing field), 4 (duplicate within 7 days) and 5 (off-topic) PASS. Conversation 1 includes the check that the reply makes no promise of a callback or next step.
-- Conversation 3 (net weight above gross) is NOT verified yet. Its run was blocked by Gemini free-tier rate limits (HTTP 429) and never reached its checks. Run it alone with: npm run eval -- netAboveGross
-- Conversations are selected by function name, not number (happyPath, missingField, netAboveGross, duplicate, offTopic).
+- Conversations 1 (happy path), 2 (missing field), 4 (duplicate within 7 days) and 5 (off-topic) passed on gemini-3.7-flash. Conversation 1 includes the check that the reply makes no promise of a callback or next step.
+- Conversation 3 (net weight above gross) passed on gemini-3.8-flash. It was run separately because gemini-3.7-flash had hit its free-tier quota, so it was not re-run on 3.7.
+- Run one conversation alone by function name: npm run eval -- netAboveGross (names: happyPath, missingField, netAboveGross, duplicate, offTopic).
+- The free tier is rate limited per model and sometimes returns 503 when a model is busy, so a full run can need retries or a second model.
 
 ## Bonus
 

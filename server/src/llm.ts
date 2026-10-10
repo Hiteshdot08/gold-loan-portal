@@ -1,7 +1,10 @@
 import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+const ai = new GoogleGenAI({
+  apiKey: process.env.GEMINI_API_KEY,
+  httpOptions: { timeout: 30000 }, // fail after 30s instead of hanging
+});
 
 type GenerateParams = Parameters<typeof ai.models.generateContent>[0];
 

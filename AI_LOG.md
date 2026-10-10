@@ -25,7 +25,7 @@ Result: `server/src/agent.ts`, `agentTools.ts`, `agentConfig.ts`, plus the confi
 
 **Fix:** I tightened rule 4 in the system prompt (`server/src/agentConfig.ts`). It now forbids promising approval, callbacks, contact from a representative, timelines or any next step, and tells the agent to report only the application id, status and loan amount from the tool result after submitting.
 
-**Test that now catches it:** the happy-path conversation in `server/src/eval.ts` has a check, "reply makes no promise of a callback or next step". It fails if the final reply matches `representative|contact you|call you|shortly|reach out`. This check was added after the free-tier Gemini quota ran out, so it has not been run yet.
+**Test that now catches it:** the happy-path conversation in `server/src/eval.ts` has a check, "reply makes no promise of a callback or next step". It fails if the final reply matches `representative|contact you|call you|shortly|reach out`. This check was added after the free-tier Gemini quota ran out. It has since been run in the happy-path conversation on gemini-3.7-flash and passes.
 
 ## Note
 
