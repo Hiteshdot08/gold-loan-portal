@@ -4,6 +4,13 @@ A gold-loan intake portal. Borrowers can apply through a guided 3-step form or c
 
 Stack: Node.js, Express, TypeScript, Zod, PostgreSQL (Prisma 6), React (Vite), Gemini (free tier) for the agent.
 
+## Live demo
+
+- App: https://gold-loan-portal-drab.vercel.app/
+- API: https://gold-loan-portal.onrender.com/api/v1/loan-schemes
+
+The API runs on Render's free tier and the database on Neon's free tier, so the first request after a period of inactivity can take 30 to 60 seconds. If the page looks stuck on first load, wait a minute and refresh.
+
 ## Setup
 
 Requires Node 20+ and Docker.
@@ -39,6 +46,12 @@ Requires Node 20+ and Docker.
 - GEMINI_MODEL: defaults to gemini-3.7-flash
 - PORT: defaults to 4000
 
+## Deployment
+
+- Database: Neon (PostgreSQL). Migration and seed were run against it with `DATABASE_URL` set to the Neon connection string.
+- Server: Render Web Service, root directory `server`, build command `npm install --include=dev && npx prisma generate`, start command `npx tsx src/server.ts`. Environment variables set on Render: `DATABASE_URL`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `NODE_ENV=production`.
+- Client: Vercel, root directory `client`, Vite preset. `client/vercel.json` rewrites `/api/*` to the Render service, so the browser only talks to Vercel and no CORS setup is needed.
+
 ## API
 
 - GET /api/v1/loan-schemes: active plans from the DB
@@ -71,6 +84,7 @@ B4 (Ops Ready), partly done:
 - Rate limit on POST /leads: 10 per minute per IP, returns 429 in the standard error shape
 - GitHub Actions CI (.github/workflows/ci.yml): server type-check and tests against a Postgres service, plus the client build
 - ARCHITECTURE.md
+- Deployed live: Neon (database), Render (API), Vercel (client)
 
 Not done: docker compose up and the demo video.
 
@@ -79,4 +93,4 @@ Not done: docker compose up and the demo video.
 - Idempotency-Key on POST /leads and a database-level guard against simultaneous duplicate requests
 - Do not retry daily-quota 429s in the LLM wrapper, and stream agent replies
 - More automated evals: prompt injection, Hinglish, the user changing their mind
-- Pagination for the leads list, Docker Compose and CI
+- Pagination for the leads list and Docker Compose
