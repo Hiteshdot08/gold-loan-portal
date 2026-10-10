@@ -96,7 +96,6 @@ Not done: docker compose up and the demo video.
 ## Known limitations
 
 - Loan Assist uses the Gemini free tier, which allows about 20 requests per model per day and a few per minute. When that quota runs out, or the model is busy, the live chat can show "Something went wrong" until the quota resets (around 12:30 PM IST). The form, quotes, leads and admin table do not depend on Gemini and keep working.
-- The deployed API may run on gemini-3.8-flash when gemini-3.7-flash has used its daily quota. Replies on that model can be slow, and a request that takes longer than the LLM timeout fails.
 - The API runs on Render's free tier, so the first request after a period of inactivity can take 30 to 60 seconds.
 
 ## With more time
