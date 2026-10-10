@@ -4,7 +4,7 @@ import { generateWithRetry } from "./llm";
 import { SYSTEM_PROMPT, FUNCTION_DECLARATIONS } from "./agentConfig";
 import { runReadOnlyTool, submitConfirmedApplication } from "./agentTools";
 
-const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.8-flash";
+const MODEL = process.env.GEMINI_MODEL ?? "gemini-3.7-flash";
 const MAX_STEPS = 6;
 
 export interface AgentResult {
