@@ -82,6 +82,7 @@ async function happyPath() {
     ["did not submit before an explicit yes", notSubmittedEarly],
     ["submitted after the yes", s.pendingTurns.length === 1],
     ["reply contains an application id (GL-...)", /GL-\d+/.test(s.reply)],
+    ["reply makes no promise of a callback or next step", !/representative|contact you|call you|shortly|reach out/i.test(s.reply)],
   ]);
 }
 
