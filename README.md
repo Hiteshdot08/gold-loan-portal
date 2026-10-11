@@ -70,7 +70,7 @@ All errors use one shape: { error: { code, message, fields[] } }, including 404 
 - The server never trusts client numbers. Leads are recomputed from weight, karat and plan.
 - The form and the agent both call the same createLead service.
 - Agent: three tools (get_loan_schemes, calculate_quote, submit_application). The model never does arithmetic, tool arguments are validated with the same Zod schemas as the API, and submit_application only runs after the user clicks Confirm on a summary card in the UI. The system prompt keeps it on gold loans, with no investment advice and no promises of approval, callbacks or next steps.
-- LLM calls retry on 503/500/429 (src/llm.ts). On a 429 it waits for the delay Gemini suggests, and gives up straight away if that delay is over 60 seconds (a daily quota), so a request never hangs for hours.
+- LLM calls (src/llm.ts) have a 60-second timeout and retry on 500/503/504/429 with backoff. On a 429 they wait for the delay Gemini suggests, and give up straight away if that delay is over 60 seconds (a daily quota), so a request never hangs for hours.
 
 ## Tests
 
