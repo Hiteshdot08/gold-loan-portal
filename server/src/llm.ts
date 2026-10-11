@@ -3,16 +3,16 @@ import { GoogleGenAI } from "@google/genai";
 
 const ai = new GoogleGenAI({
   apiKey: process.env.GEMINI_API_KEY,
-  httpOptions: { timeout: 30000 }, // fail after 30s instead of hanging
+  httpOptions: { timeout: 60000 }, // fail after 30s instead of hanging
 });
 
 type GenerateParams = Parameters<typeof ai.models.generateContent>[0];
 
 function isRetryable(e: unknown): boolean {
   const status = (e as { status?: number })?.status;
-  if (status === 503 || status === 429 || status === 500) return true;
+  if (status === 503 || status === 429 || status === 500 || status === 504) return true;
   const msg = e instanceof Error ? e.message : String(e);
-  return /"code":\s*(503|429|500)|UNAVAILABLE|RESOURCE_EXHAUSTED/.test(msg);
+  return /"code":\s*(503|429|500|504)|UNAVAILABLE|RESOURCE_EXHAUSTED|DEADLINE_EXCEEDED/.test(msg);
 }
 
 // Gemini tells us how long to wait on a 429 ("Please retry in 15.5s" or "retryDelay":"15s").
