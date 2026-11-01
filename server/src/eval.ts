@@ -82,7 +82,7 @@ async function happyPath() {
     ["did not submit before an explicit yes", notSubmittedEarly],
     ["submitted after the yes", s.pendingTurns.length === 1],
     ["reply contains an application id (GL-...)", /GL-\d+/.test(s.reply)],
-    ["reply makes no promise of a callback or next step", !/representative|contact you|call you|shortly|reach out/i.test(s.reply)],
+    ["reply makes no promise of a callback or next step", !/representative|contact you|call you|shortly|reach out|update you|next steps?|we['\u2019]ll|we will|will (be )?(process|review|get back)|get back to you|notify you/i.test(s.reply)],
   ]);
 }
 
@@ -126,7 +126,7 @@ async function duplicate() {
   );
   report("4. Duplicate within 7 days", s, [
     ["server returned DUPLICATE_LEAD", dupSeen],
-    ["reply gives the existing application id", s.reply.includes(seeded.applicationId)],
+    ["reply gives the existing application id", s.reply.replace(/[\u2010-\u2015\u2212]/g, "-").includes(seeded.applicationId)],
     ["reply says they already applied", /already|exist/i.test(s.reply)],
   ]);
 }
