@@ -4,6 +4,7 @@
 
 - **Claude**: step-by-step guidance for building the project (backend, tests, form, agent, README, CI) and for reviewing the output I pasted back from my terminal.
 - **Gemini (gemini-3.7-flash, free tier)**: the model behind the Loan Assist agent, called only from the backend through function calling.
+- **Groq (openai/gpt-oss-120b, free tier)**: a second provider I added behind the LLM_PROVIDER switch, because Gemini's free quota and timeouts made the live chat unreliable. Also called only from the backend.
 
 ## Prompt 1: validation
 
@@ -25,8 +26,14 @@ Result: `server/src/agent.ts`, `agentTools.ts`, `agentConfig.ts`, plus the confi
 
 **Fix:** I tightened rule 4 in the system prompt (`server/src/agentConfig.ts`). It now forbids promising approval, callbacks, contact from a representative, timelines or any next step, and tells the agent to report only the application id, status and loan amount from the tool result after submitting.
 
-**Test that now catches it:** the happy-path conversation in `server/src/eval.ts` has a check, "reply makes no promise of a callback or next step". It fails if the final reply matches `representative|contact you|call you|shortly|reach out`. This check was added after the free-tier Gemini quota ran out. It has since been run in the happy-path conversation on gemini-3.7-flash and passes.
+**Test that now catches it:** the happy-path conversation in `server/src/eval.ts` has a check, "reply makes no promise of a callback or next step". It fails if the final reply matches `representative|contact you|call you|shortly|reach out`, and since the Groq run it also matches `update you|next steps|we'll|we will|get back to you|notify you` and similar. This check was added after the free-tier Gemini quota ran out. It has since been run in the happy-path conversation on gemini-3.7-flash and passes.
+
+## A second miss, found when I switched model
+
+When I moved the agent to Groq (openai/gpt-oss-120b), the happy-path reply ended with "We'll process your request and update you on the next steps." The original check passed it, because its word list had "contact you" and "shortly" but not "update you" or "next steps". So the test I wrote for the first mistake was too narrow. I spotted it by reading the eval output, not from a failing check. I widened the regex in `server/src/eval.ts` and added to rule 4 in `agentConfig.ts`: after a submission, reply with only the application id, status and loan amount, and do not say what happens next.
+
+A smaller one in the same run: the model wrote the application id with a non-breaking hyphen, so the duplicate check `reply.includes(applicationId)` failed even though the answer was right. The check now normalises Unicode hyphens first. That was a bug in my test, not in the agent.
 
 ## Note
 
-The prompts above are the original ones. I may change them later.
+The prompts above are the original ones (written for Gemini). The Groq adapter in `server/src/llm.ts` was written with Claude's help and checked by running `npm run eval`.

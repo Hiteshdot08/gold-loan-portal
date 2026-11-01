@@ -2,7 +2,7 @@
 
 A gold-loan intake portal. Borrowers can apply through a guided 3-step form or chat with a Loan Assist agent. Both paths use the same backend, service layer and quote maths.
 
-Stack: Node.js, Express, TypeScript, Zod, PostgreSQL (Prisma 6), React (Vite), Gemini (free tier) for the agent.
+Stack: Node.js, Express, TypeScript, Zod, PostgreSQL (Prisma 6), React (Vite), Gemini or Groq (free tiers) for the agent, chosen with the LLM_PROVIDER variable.
 
 ## Live demo
 
@@ -24,7 +24,7 @@ Requires Node 20+ and Docker.
 2. Server:
 
         cd server
-        cp .env.example .env     # then put your Gemini API key in .env
+        cp .env.example .env     # then put your Gemini or Groq API key in .env
         npm install
         npm run db:migrate
         npm run seed
@@ -46,12 +46,15 @@ Requires Node 20+ and Docker.
 - DATABASE_URL: Postgres connection string
 - GEMINI_API_KEY: key for the agent (never committed, all LLM calls go through the backend)
 - GEMINI_MODEL: defaults to gemini-3.7-flash
+- LLM_PROVIDER: gemini (default) or groq
+- GROQ_API_KEY: key for Groq, used when LLM_PROVIDER=groq (never committed)
+- GROQ_MODEL: defaults to llama-3.3-70b-versatile in code, but I use openai/gpt-oss-120b (the first one was not available on my Groq account)
 - PORT: defaults to 4000
 
 ## Deployment
 
 - Database: Neon (PostgreSQL). Migration and seed were run against it with `DATABASE_URL` set to the Neon connection string.
-- Server: Render Web Service, root directory `server`, build command `npm install --include=dev && npx prisma generate`, start command `npx tsx src/server.ts`. Environment variables set on Render: `DATABASE_URL`, `GEMINI_API_KEY`, `GEMINI_MODEL`, `NODE_ENV=production`.
+- Server: Render Web Service, root directory `server`, build command `npm install --include=dev && npx prisma generate`, start command `npx tsx src/server.ts`. Environment variables set on Render: `DATABASE_URL`, `NODE_ENV=production`, and the LLM settings (`LLM_PROVIDER`, plus `GEMINI_API_KEY` and `GEMINI_MODEL`, or `GROQ_API_KEY` and `GROQ_MODEL`). Values are entered without quotes.
 - Client: Vercel, root directory `client`, Vite preset. `client/vercel.json` rewrites `/api/*` to the Render service, so the browser only talks to Vercel and no CORS setup is needed.
 
 ## API
@@ -71,18 +74,20 @@ All errors use one shape: { error: { code, message, fields[] } }, including 404 
 - The form and the agent both call the same createLead service.
 - Agent: three tools (get_loan_schemes, calculate_quote, submit_application). The model never does arithmetic, tool arguments are validated with the same Zod schemas as the API, and submit_application only runs after the user clicks Confirm on a summary card in the UI. The system prompt keeps it on gold loans, with no investment advice and no promises of approval, callbacks or next steps.
 - LLM calls (src/llm.ts) have a 60-second timeout and retry on 500/503/504/429 with backoff. On a 429 they wait for the delay Gemini suggests, and give up straight away if that delay is over 60 seconds (a daily quota), so a request never hangs for hours.
+- The model provider is swappable. src/llm.ts converts the app's message history to the OpenAI-style format for Groq and back, so agent.ts, the tools, the routes and the UI do not change. Switching is one environment variable (LLM_PROVIDER). Models used: gemini-3.7-flash (Gemini) and openai/gpt-oss-120b (Groq). Groq is called with plain fetch, so no extra package is needed.
 
 ## Tests
 
 - Unit and API tests (npm test, 30 tests in 6 files): quote maths including the brief's cases 1 to 4, Zod schemas (cases 4 and 5), error contract, lead utilities, 404 and invalid JSON, and the leads endpoint (201 on success with server-side recomputation, 409 for a duplicate mobile).
 - Agent conversations (npm run eval in server): 5 scripted conversations: happy path, missing field, net above gross, duplicate within 7 days, off-topic.
 
-Eval status (10 Oct 2026, Gemini free tier). All 5 conversations pass:
+Eval status:
 
-- Conversations 1 (happy path), 2 (missing field), 4 (duplicate within 7 days) and 5 (off-topic) passed on gemini-3.7-flash. Conversation 1 includes the check that the reply makes no promise of a callback or next step.
-- Conversation 3 (net weight above gross) passed on gemini-3.8-flash. It was run separately because gemini-3.7-flash had hit its free-tier quota, so it was not re-run on 3.7.
+- Groq, openai/gpt-oss-120b (1 Nov 2026): conversations 1 (happy path), 2 (missing field), 3 (net above gross) and 5 (off-topic) passed. In conversation 4 (duplicate) the agent answered correctly and named the existing application, but the check failed because the model wrote the id with a non-breaking hyphen (GL-1029 with a different dash character). The check now normalises Unicode hyphens before matching.
+- The same run showed the model saying "We'll process your request and update you on the next steps" after submitting, which the original no-promise check did not catch. I widened that check and tightened rule 4 in the system prompt (see AI_LOG).
+- Gemini (10 Oct 2026): conversations 1, 2, 4 and 5 passed on gemini-3.7-flash, and conversation 3 passed on gemini-3.8-flash.
 - Run one conversation alone by function name: npm run eval -- netAboveGross (names: happyPath, missingField, netAboveGross, duplicate, offTopic).
-- The free tier is rate limited per model and sometimes returns 503 when a model is busy, so a full run can need retries or a second model.
+- Free tiers are rate limited per model and sometimes return 503 when a model is busy, so a full run can need retries.
 
 ## Bonus
 
@@ -97,7 +102,7 @@ Not done: docker compose up and the demo video.
 
 ## Known limitations
 
-- Loan Assist uses the Gemini free tier, which allows about 20 requests per model per day and a few per minute. When that quota runs out, or the model is busy, the live chat can show "Something went wrong" until the quota resets (around 12:30 PM IST). The form, quotes, leads and admin table do not depend on Gemini and keep working.
+- Loan Assist runs on a free LLM tier (Gemini, or Groq). Gemini allows about 20 requests per model per day; Groq limits requests per minute. When a limit is hit, or the model is busy, the chat can show "Something went wrong" until the limit clears. The form, quotes, leads and admin table do not depend on the LLM and keep working.
 - The API runs on Render's free tier, so the first request after a period of inactivity can take 30 to 60 seconds.
 
 ## With more time
